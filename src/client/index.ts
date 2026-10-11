@@ -149,7 +149,7 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
     ctx.slots.register(
       {
         name: 'plugins.row.config',
-        key: 'dsh-file-review#file-review',
+        key: 'dsh-file-review-trust#file-review',
         locale: NS,
         inject: () => ({
           hooks: { fileReviewSettings: settings },
@@ -195,7 +195,7 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
         name: 'conversation.chat.turnTail',
         id: 'dsh-file-review',
         order: -2,
-        registrant: 'dsh-file-review',
+        registrant: 'dsh-file-review-trust',
         locale: NS,
         inject: (sessionId) => {
           const remote = reviewRemoteFor(sessionId)

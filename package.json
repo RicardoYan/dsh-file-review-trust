@@ -1,21 +1,21 @@
 {
-  "name": "dsh-file-review",
-  "version": "0.8.8",
-  "description": "Review DeepSeek Harness file changes in native sidebar tabs",
+  "name": "dsh-file-review-trust",
+  "version": "0.8.8-trust.1",
+  "description": "dsh-file-review fork: also review trusted files outside the workspace · dsh-file-review 分支：已信任工作区之外的文件改动也能审阅",
   "keywords": [
     "code-review",
     "deepseek-harness",
     "diff",
     "dsh-plugin"
   ],
-  "homepage": "https://github.com/left0ver/dsh-file-review#readme",
+  "homepage": "https://github.com/RicardoYan/dsh-file-review-trust#readme",
   "bugs": {
-    "url": "https://github.com/left0ver/dsh-file-review/issues"
+    "url": "https://github.com/RicardoYan/dsh-file-review-trust/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/left0ver/dsh-file-review.git"
+    "url": "git+https://github.com/RicardoYan/dsh-file-review-trust.git"
   },
   "files": [
     "lib",
@@ -47,15 +47,11 @@
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "prepare": "husky",
     "check:readme-i18n": "node scripts/verify-readme-i18n.mjs",
     "update:readme-i18n": "node scripts/verify-readme-i18n.mjs --write",
     "bump:dsh": "node scripts/bump-dsh.mjs",
@@ -69,9 +65,7 @@
     "adapter:e2e": "sh adapter_script/run-e2e.sh",
     "adapter:start-dsh": "sh adapter_script/start-dsh.sh",
     "test": "npm run build && vitest run && npm run test:pack",
-    "test:pack": "node scripts/verify-pack.mjs",
-    "prepack": "npm run codecheck && npm run typecheck && npm test",
-    "release": "npm publish --registry=https://registry.npmjs.org/"
+    "test:pack": "node scripts/verify-pack.mjs"
   },
   "dependencies": {
     "@deepseek-ai/dsh-util-workspace-path": ">=0.2.0-rc.1 <0.2.1-0",
@@ -157,7 +151,13 @@
     "@deepseek-ai/dsh-tools": ">=0.2.0-rc.1 <0.2.1-0",
     "@deepseek-ai/dsh-typert-protocol": ">=0.2.0-rc.1 <0.2.1-0",
     "@deepseek-ai/dsh-typert-registry": ">=0.2.0-rc.1 <0.2.1-0",
+    "dsh-workspace-trust": ">=0.1.0 <0.2.0",
     "react": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-workspace-trust": {
+      "optional": true
+    }
   },
   "icon": "./assets/icon.svg",
   "dsh": {

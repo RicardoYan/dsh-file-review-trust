@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises'
-import { basename, dirname, resolve } from 'node:path'
+import { basename, dirname, relative, resolve } from 'node:path'
 import type { UserConfig } from 'tsdown'
 import { transform } from 'lightningcss'
 
-const PACKAGE_NAME = 'dsh-file-review'
+const PACKAGE_NAME = 'dsh-file-review-trust'
 const CSS_VIRTUAL_PREFIX = '\0dsh-file-review-css:'
 const CSS_VIRTUAL_SUFFIX = '.mjs'
 const CLIENT_EXTERNALS = ['react', 'react/jsx-runtime'] as const
+// Fork: keep the build machine's absolute paths out of the committed bundle.
+const ROOT = dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'))
 
 /** Compile CSS Modules into package-owned style elements understood by the Web plugin loader. */
 function cssModulesPlugin() {
@@ -15,11 +17,14 @@ function cssModulesPlugin() {
     resolveId(source: string, importer: string | undefined) {
       if (!source.endsWith('.module.css')) return null
       const file = importer === undefined ? source : resolve(dirname(importer), source)
-      return CSS_VIRTUAL_PREFIX + file + CSS_VIRTUAL_SUFFIX
+      return CSS_VIRTUAL_PREFIX + relative(ROOT, file).replace(/\\/g, '/') + CSS_VIRTUAL_SUFFIX
     },
     async load(virtualId: string) {
       if (!virtualId.startsWith(CSS_VIRTUAL_PREFIX)) return null
-      const file = virtualId.slice(CSS_VIRTUAL_PREFIX.length, -CSS_VIRTUAL_SUFFIX.length)
+      const file = resolve(
+        ROOT,
+        virtualId.slice(CSS_VIRTUAL_PREFIX.length, -CSS_VIRTUAL_SUFFIX.length),
+      )
       this.addWatchFile(file)
       const source = await readFile(file)
       const { code, exports } = transform({

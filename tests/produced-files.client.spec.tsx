@@ -1750,7 +1750,7 @@ describe('plugin registration', () => {
     expect(settingsRegistration).toEqual({
       options: expect.objectContaining({
         name: 'plugins.row.config',
-        key: 'dsh-file-review#file-review',
+        key: 'dsh-file-review-trust#file-review',
         locale: NS,
         inject: expect.any(Function),
       }),

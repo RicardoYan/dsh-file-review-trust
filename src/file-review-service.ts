@@ -2,7 +2,7 @@
 
 import { randomUUID } from 'node:crypto'
 import { link, lstat, open, readFile, realpath, rename, unlink } from 'node:fs/promises'
-import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
+import { basename, dirname, resolve } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol'
@@ -14,6 +14,7 @@ import type {
   FileReviewResult,
 } from './change-types.ts'
 import { isReversibleChange } from './file-review-change.ts'
+import { workspaceScope, type WorkspaceScope } from './workspace-scope.ts'
 
 type InspectState = Exclude<FileReviewFileResult['state'], 'error'>
 
@@ -34,11 +35,6 @@ type FileImage = PresentFile | MissingFile
 
 class FileConflictError extends Error {}
 
-function inside(root: string, candidate: string): boolean {
-  const child = relative(root, candidate)
-  return child === '' || (!child.startsWith('..') && !isAbsolute(child))
-}
-
 function errorCode(error: unknown, code: string): boolean {
   return (
     typeof error === 'object' &&
@@ -48,23 +44,28 @@ function errorCode(error: unknown, code: string): boolean {
   )
 }
 
-async function resolveFile(cwd: string, requestedPath: string): Promise<FileImage> {
-  const root = await realpath(cwd)
-  const candidate = resolve(root, requestedPath)
-  if (!inside(root, candidate)) throw new Error('path is outside the session workspace')
+// Fork: the scope check (session directory, or the trust plugin's rules) replaces
+// upstream's "inside the session directory" test, and runs again on every toggle.
+async function resolveFile(scope: WorkspaceScope, requestedPath: string): Promise<FileImage> {
+  const candidate = resolve(scope.cwd, requestedPath)
+  const early = await scope.check(candidate)
+  if (early !== undefined) throw new Error(early)
   let linkStat
   try {
     linkStat = await lstat(candidate)
   } catch (error) {
     if (!errorCode(error, 'ENOENT')) throw error
     const parent = await realpath(dirname(candidate))
-    if (!inside(root, parent)) throw new Error('resolved path is outside the session workspace')
-    return { kind: 'missing', filename: resolve(parent, basename(candidate)) }
+    const missing = resolve(parent, basename(candidate))
+    const refused = await scope.check(missing)
+    if (refused !== undefined) throw new Error(refused)
+    return { kind: 'missing', filename: missing }
   }
   if (linkStat.isSymbolicLink()) throw new Error('symbolic links are not supported')
   if (!linkStat.isFile()) throw new Error('path is not a regular file')
   const filename = await realpath(candidate)
-  if (!inside(root, filename)) throw new Error('resolved path is outside the session workspace')
+  const refused = await scope.check(filename)
+  if (refused !== undefined) throw new Error(refused)
   const bytes = await readFile(filename)
   const text = bytes.toString('utf8')
   if (!Buffer.from(text, 'utf8').equals(bytes)) throw new Error('file is not valid UTF-8 text')
@@ -208,7 +209,7 @@ function inspectImage(
 }
 
 async function inspectOne(
-  cwd: string,
+  scope: WorkspaceScope,
   file: FileReviewChange,
   action: FileReviewAction,
 ): Promise<FileReviewFileResult> {
@@ -221,7 +222,7 @@ async function inspectOne(
     }
   }
   try {
-    const resolved = await resolveFile(cwd, file.path)
+    const resolved = await resolveFile(scope, file.path)
     const inspected = inspectImage(resolved, file, action)
     return { path: file.path, state: inspected.state, changed: false, reason: inspected.reason }
   } catch (error) {
@@ -321,7 +322,7 @@ async function commitImage(current: FileImage, target: FileImage): Promise<boole
 }
 
 async function applyOne(
-  cwd: string,
+  scope: WorkspaceScope,
   file: FileReviewChange,
   action: FileReviewAction,
 ): Promise<FileReviewFileResult> {
@@ -334,7 +335,7 @@ async function applyOne(
     }
   }
   try {
-    const resolved = await resolveFile(cwd, file.path)
+    const resolved = await resolveFile(scope, file.path)
     const targetState = action === 'undo' ? 'undone' : 'applied'
     const target = transformImage(resolved, file, action)
     const reverse = transformImage(resolved, file, action === 'undo' ? 'redo' : 'undo')
@@ -376,6 +377,36 @@ function sessionCwd(agent: Agent): string {
   return cwd
 }
 
+/** The optional `workspaceTrust` service, read at call time (fork addition). */
+function trustOf(service: unknown): unknown {
+  try {
+    return (service as { ctx?: { get?: (name: string) => unknown } })?.ctx?.get?.('workspaceTrust')
+  } catch {
+    return undefined
+  }
+}
+
+/** Like upstream, a session directory that cannot be resolved fails each file, not the call. */
+async function scopeOrError(
+  cwd: string,
+  trust: unknown,
+  request: FileReviewRequest,
+): Promise<WorkspaceScope | FileReviewResult> {
+  try {
+    return await workspaceScope(cwd, trust)
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+    return {
+      files: request.files.map((file) => ({
+        path: file.path,
+        state: 'error',
+        changed: false,
+        reason,
+      })),
+    }
+  }
+}
+
 /** Host service published as the `fileReview` Remote namespace. */
 export class FileReviewService extends TypertRemoteService {
   constructor(ctx: Context) {
@@ -384,9 +415,10 @@ export class FileReviewService extends TypertRemoteService {
 
   /** Inspect current disk state without changing files. */
   async status(agent: Agent, request: FileReviewRequest): Promise<FileReviewResult> {
-    const cwd = sessionCwd(agent)
+    const scope = await scopeOrError(sessionCwd(agent), trustOf(this), request)
+    if ('files' in scope) return scope
     const files = await Promise.all(
-      request.files.map((file) => inspectOne(cwd, file, request.action)),
+      request.files.map((file) => inspectOne(scope, file, request.action)),
     )
     return { files }
   }
@@ -394,9 +426,12 @@ export class FileReviewService extends TypertRemoteService {
   /** Toggle every independently safe file while the receiving Agent is idle. */
   async apply(agent: Agent, request: FileReviewRequest): Promise<FileReviewResult> {
     const cwd = sessionCwd(agent)
+    const trust = trustOf(this)
     return agent.runMaintenance(async () => {
+      const scope = await scopeOrError(cwd, trust, request)
+      if ('files' in scope) return scope
       const files: FileReviewFileResult[] = []
-      for (const file of request.files) files.push(await applyOne(cwd, file, request.action))
+      for (const file of request.files) files.push(await applyOne(scope, file, request.action))
       return { files }
     })
   }

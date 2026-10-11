@@ -24,7 +24,7 @@ describe('published browser artifact', () => {
     const artifact = pathToFileURL(new URL('../lib/client.js', import.meta.url).pathname)
     await import(/* @vite-ignore */ `${artifact.href}?test=${String(Date.now())}`)
 
-    expect(handoff?.id).toBe('dsh-file-review')
+    expect(handoff?.id).toBe('dsh-file-review-trust')
     const shared: Record<string, unknown> = {
       react: React,
       'react/jsx-runtime': jsxRuntime,
@@ -47,6 +47,6 @@ describe('published browser artifact', () => {
       'sidebarRight',
       'sidebarRightTabs',
     ])
-    expect(document.querySelectorAll('style[data-plugin="dsh-file-review"]')).toHaveLength(3)
+    expect(document.querySelectorAll('style[data-plugin="dsh-file-review-trust"]')).toHaveLength(3)
   })
 })

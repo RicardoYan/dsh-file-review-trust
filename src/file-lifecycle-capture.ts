@@ -1,7 +1,7 @@
 /** Capture exact file transitions around successful mutation tools. */
 
 import { lstat, readFile, realpath } from 'node:fs/promises'
-import { isAbsolute, relative, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {
@@ -21,6 +21,7 @@ import {
   normalizeMutationPresentation,
 } from './ptc-marker.ts'
 import { sessionEvents } from './session-events.ts'
+import { realMissingPath, workspaceScope, type WorkspaceScope } from './workspace-scope.ts'
 
 interface MissingCapture {
   readonly kind: 'missing'
@@ -44,11 +45,6 @@ interface CapturedResult {
   readonly subCallId: string
 }
 
-function inside(root: string, candidate: string): boolean {
-  const child = relative(root, candidate)
-  return child === '' || (!child.startsWith('..') && !isAbsolute(child))
-}
-
 function errorCode(error: unknown, code: string): boolean {
   return (
     typeof error === 'object' &&
@@ -58,18 +54,27 @@ function errorCode(error: unknown, code: string): boolean {
   )
 }
 
-async function capturePath(root: string, path: string): Promise<CapturedImage | null> {
-  const candidate = resolve(root, path)
-  if (!inside(root, candidate)) return null
+// Fork: the scope check (session directory, or the trust plugin's rules) replaces
+// upstream's "inside the session directory" test.
+async function capturePath(scope: WorkspaceScope, path: string): Promise<CapturedImage | null> {
+  const candidate = resolve(scope.cwd, path)
+  if ((await scope.check(candidate)) !== undefined) return null
   let stat
   try {
     stat = await lstat(candidate)
   } catch (error) {
-    return errorCode(error, 'ENOENT') ? { kind: 'missing' } : null
+    if (!errorCode(error, 'ENOENT')) return null
+    try {
+      return (await scope.check(await realMissingPath(candidate))) === undefined
+        ? { kind: 'missing' }
+        : null
+    } catch {
+      return null
+    }
   }
   if (stat.isSymbolicLink() || !stat.isFile()) return null
   const filename = await realpath(candidate)
-  if (!inside(root, filename)) return null
+  if ((await scope.check(filename)) !== undefined) return null
   const bytes = await readFile(filename)
   const text = bytes.toString('utf8')
   if (!Buffer.from(text, 'utf8').equals(bytes)) return null
@@ -119,11 +124,11 @@ function rootCall(agent: Agent, rootCallId: string): { turn: number; step: numbe
 }
 
 async function captureImages(
-  root: string,
+  scope: WorkspaceScope,
   paths: readonly string[],
 ): Promise<ReadonlyMap<string, CapturedImage | null>> {
   const entries = await Promise.all(
-    paths.map(async (path) => [path, await capturePath(root, path)] as const),
+    paths.map(async (path) => [path, await capturePath(scope, path)] as const),
   )
   return new Map(entries)
 }
@@ -290,18 +295,18 @@ export function registerFileLifecycleCapture(ctx: Context): void {
       if (agent === undefined || cwd === undefined || cwd.trim() === '' || paths.length === 0) {
         return next()
       }
-      let root: string
+      let scope: WorkspaceScope
       let before: ReadonlyMap<string, CapturedImage | null>
       try {
-        root = await realpath(cwd)
-        before = await captureImages(root, paths)
+        scope = await workspaceScope(cwd, ctx.get('workspaceTrust'))
+        before = await captureImages(scope, paths)
       } catch {
         return next()
       }
       const result = await next()
       if (result.isError) return result
       try {
-        const after = await captureImages(root, paths)
+        const after = await captureImages(scope, paths)
         const snapshots = snapshotFiles(paths, before, after)
         let presented: readonly PresentedFileChange[]
         try {

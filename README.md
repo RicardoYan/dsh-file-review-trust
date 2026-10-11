@@ -16,6 +16,28 @@ English · [简体中文](README.zh.md)
 
 </div>
 
+> **This is dsh-file-review-trust, a fork of [left0ver/dsh-file-review](https://github.com/left0ver/dsh-file-review).**
+>
+> One difference: together with [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust), **changes to files outside a trusted workspace can be reviewed and undone too**.
+>
+> | File location                                                        | Listed / undo                            |
+> | -------------------------------------------------------------------- | ---------------------------------------- |
+> | Inside the workspace (the git root found from the session directory) | ✓                                        |
+> | Outside it, workspace trusted                                        | ✓ (checked again on undo)                |
+> | Outside it, not trusted                                              | ✗                                        |
+> | On the denied list                                                   | ✗                                        |
+> | dsh-workspace-trust not installed                                    | Same as upstream: session directory only |
+>
+> Install (remove the original first; the two cannot be installed together):
+>
+> ```sh
+> dsh plugin --profile desktop remove dsh-file-review
+> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.1.0
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.8-trust.1
+> ```
+>
+> Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
+
 ## How to use
 
 <p align="center">

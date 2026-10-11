@@ -16,6 +16,28 @@
 
 </div>
 
+> **这是 [left0ver/dsh-file-review](https://github.com/left0ver/dsh-file-review) 的分支：dsh-file-review-trust**
+>
+> 和原版只有一处不同：配合 [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust)，**已信任工作区之外的文件改动也能审阅、撤销**。
+>
+> | 文件位置                                | 记进清单 / 撤销          |
+> | --------------------------------------- | ------------------------ |
+> | 工作区内（从会话目录往上找到的 git 根） | ✓                        |
+> | 工作区外，工作区已信任                  | ✓（撤销时再查一次）      |
+> | 工作区外，未信任                        | ✗                        |
+> | 禁止访问列表里的                        | ✗                        |
+> | 没装 dsh-workspace-trust                | 和原版一样，只认会话目录 |
+>
+> 安装（先卸载原版，两者不能同时装）：
+>
+> ```sh
+> dsh plugin --profile desktop remove dsh-file-review
+> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.1.0
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.8-trust.1
+> ```
+>
+> 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。
+
 ## 怎么用
 
 <p align="center">
