@@ -4,7 +4,7 @@
 
 **无需离开 DeepSeek Harness Web，即可立即审查 Agent 刚刚修改的每个文件。**
 
-[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.0--rc.2-4f46e5?style=flat-square)](package.json)
+[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.1--rc.1-4f46e5?style=flat-square)](package.json)
 ![Web profile](https://img.shields.io/badge/profile-Web-0ea5e9?style=flat-square)
 [![npm version](https://img.shields.io/npm/v/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
 [![npm downloads](https://img.shields.io/npm/dm/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
@@ -33,7 +33,7 @@
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
 > dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.1.0
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.8-trust.1
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.9-trust.1
 > ```
 >
 > 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。
