@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "File review (trusted) (dsh-file-review-trust)",
+    "description": "Review file changes in a sidebar tab; unlike upstream, changes outside a trusted workspace can be reviewed and reverted too."
+  }
+}

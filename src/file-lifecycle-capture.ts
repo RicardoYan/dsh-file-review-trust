@@ -1,7 +1,7 @@
 /** Capture exact file transitions around successful mutation tools. */
 
 import { lstat, readFile, realpath } from 'node:fs/promises'
-import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {
@@ -353,7 +353,7 @@ export function registerFileLifecycleCapture(ctx: Context): void {
         } catch {
           presented = normalizeMutationPresentation(callView, undefined)
         }
-        const files = await mergePresentedFiles(root, presented, snapshots)
+        const files = await mergePresentedFiles(scope.cwd, presented, snapshots)
         const owner = rootCall(agent, exec.rootCallId)
         if (snapshots.length > 0 && files.length > 0 && owner !== null) {
           captured.set(exec.token, {

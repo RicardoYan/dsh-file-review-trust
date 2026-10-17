@@ -4,7 +4,7 @@
 
 **无需离开 DeepSeek Harness Web，即可立即审查 Agent 刚刚修改的每个文件。**
 
-[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.1--rc.1-4f46e5?style=flat-square)](package.json)
+[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.1--rc.2-4f46e5?style=flat-square)](package.json)
 ![Web profile](https://img.shields.io/badge/profile-Web-0ea5e9?style=flat-square)
 [![npm version](https://img.shields.io/npm/v/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
 [![npm downloads](https://img.shields.io/npm/dm/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
@@ -60,7 +60,7 @@
 
 ## 兼容性声明
 
-顶部徽章是本版本实际测试过的 DSH CLI 版本。插件同时兼容该 DSH 版本的其他预发布版和正式版（例如所有 `0.2.0-rc.x` 以及 `0.2.0`），准确范围见 [package.json](package.json) 中的 `peerDependencies`。
+顶部徽章是本版本实际测试过的 DSH CLI 版本。插件同时兼容该 DSH 版本的其他预发布版和正式版（例如所有 `0.2.1-rc.x` 以及 `0.2.1`），准确范围见 [package.json](package.json) 中的 `engines.dsh`；DSH 0.2.1 起以它为准，不再看 `peerDependencies`（两者范围相同）。
 
 超出该范围时，DSH 会拒绝加载插件。如果仍想使用（风险自负），可以为对应的精确版本授予豁免：
 

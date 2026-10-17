@@ -4,7 +4,7 @@
 
 **Review every file an agent just changed—without leaving DeepSeek Harness Web.**
 
-[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.1--rc.1-4f46e5?style=flat-square)](package.json)
+[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.1--rc.2-4f46e5?style=flat-square)](package.json)
 ![Web profile](https://img.shields.io/badge/profile-Web-0ea5e9?style=flat-square)
 [![npm version](https://img.shields.io/npm/v/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
 [![npm downloads](https://img.shields.io/npm/dm/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
@@ -32,8 +32,8 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.1.0
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.9-trust.1
+> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.0
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.1
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
@@ -60,7 +60,7 @@ English · [简体中文](README.zh.md)
 
 ## Compatibility
 
-The badge above shows the DSH CLI version this release was tested against. The plugin also accepts the other prereleases and the final release of that DSH version (for example, every `0.2.0-rc.x` plus `0.2.0`); the exact range is `peerDependencies` in [package.json](package.json).
+The badge above shows the DSH CLI version this release was tested against. The plugin also accepts the other prereleases and the final release of that DSH version (for example, every `0.2.1-rc.x` plus `0.2.1`); the exact range is `engines.dsh` in [package.json](package.json), which DSH 0.2.1 and later check instead of `peerDependencies` (both carry the same range).
 
 Outside that range, DSH refuses to load the plugin. To run it anyway at your own risk, grant an exemption for the exact versions involved:
 
