@@ -32,7 +32,7 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.0
+> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.1
 > dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.1
 > ```
 >
