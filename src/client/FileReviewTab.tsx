@@ -21,6 +21,14 @@ export interface ReviewTarget {
   readonly turn: number
   readonly closingSeq: number
   readonly focusPaths: readonly string[]
+  /**
+   * Session whose timeline carries the reviewed turn. Absent in targets
+   * restored from before this field existed, which fall back to the tab's own
+   * Session. A review opened from a subagent conversation inside the right
+   * Sidebar draws in that conversation's host Session while the reviewed turn
+   * lives in the child, so the two are not interchangeable.
+   */
+  readonly sessionId?: string | undefined
 }
 
 export interface FileReviewTabRuntime {
@@ -53,10 +61,15 @@ function reviewTargetFrom(value: unknown): ReviewTarget | undefined {
   ) {
     return undefined
   }
+  const reviewed =
+    typeof candidate.sessionId === 'string' && candidate.sessionId !== ''
+      ? candidate.sessionId
+      : undefined
   return {
     turn: candidate.turn as number,
     closingSeq: candidate.closingSeq as number,
     focusPaths: candidate.focusPaths,
+    ...(reviewed === undefined ? {} : { sessionId: reviewed }),
   }
 }
 
@@ -81,24 +94,30 @@ export function FileReviewTab({
   )
   useSyncExternalStore(subscribeSessions, getSessionsSnapshot, getSessionsSnapshot)
 
-  const binding = sessions.binding(sessionId)
+  const target = useMemo(() => reviewTargetFrom(params), [params])
+
+  // A target naming another Session reviews that Session's turn: the tab then
+  // renders in whichever Session hosts the column, and every read below —
+  // the reviewed turn, comments, undo — belongs to the reviewed one. Targets
+  // without the field (rows opened before it existed) review the host Session.
+  const reviewedSessionId = target?.sessionId ?? sessionId
+  const binding = sessions.binding(reviewedSessionId as SessionId)
   const chat = binding === undefined ? undefined : uiConversation.binding(binding).target('chat')
   const getChatSnapshot = useCallback(() => chat?.getSnapshot() ?? EMPTY_SNAPSHOT, [chat])
   const subscribeChat = useCallback(
     (listener: () => void) => (visible ? (chat?.subscribe(listener) ?? (() => {})) : () => {}),
     [chat, visible],
   )
-  const snapshot = useSyncExternalStore(subscribeChat, getChatSnapshot, getChatSnapshot)
-  const target = useMemo(() => reviewTargetFrom(params), [params])
+  const dataSnapshot = useSyncExternalStore(subscribeChat, getChatSnapshot, getChatSnapshot)
 
   const reviews = useMemo(() => {
-    if (target === undefined || snapshot === EMPTY_SNAPSHOT) return []
-    const turn = snapshot.timeline.turns.get(target.turn)
+    if (target === undefined || dataSnapshot === EMPTY_SNAPSHOT) return []
+    const turn = dataSnapshot.timeline.turns.get(target.turn)
     const available = reviewsForClosing(turn?.data.get('deliverables'), target.closingSeq)
     if (target.focusPaths.length === 0) return available
     const focused = new Set(target.focusPaths)
     return available.filter((review) => focused.has(review.path))
-  }, [snapshot, target])
+  }, [dataSnapshot, target])
 
   if (target === undefined) {
     return (
@@ -107,7 +126,7 @@ export function FileReviewTab({
       </div>
     )
   }
-  if (snapshot === EMPTY_SNAPSHOT) {
+  if (dataSnapshot === EMPTY_SNAPSHOT) {
     return (
       <div className={css.sidebarTabEmpty} role="status">
         {t('review.sidebarSessionUnavailable')}
@@ -127,7 +146,7 @@ export function FileReviewTab({
       <ReviewContent
         reviews={reviews}
         projectRoot={projectRoot}
-        sessionId={sessionId}
+        sessionId={reviewedSessionId}
         turn={target.turn}
         closingSeq={target.closingSeq}
         openFile={openFile}

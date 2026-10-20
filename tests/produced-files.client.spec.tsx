@@ -1733,7 +1733,11 @@ describe('plugin registration', () => {
         },
       },
       inputTriggers: { registerSource },
-      sidebarRight: { openTabIn: vi.fn() },
+      sidebarRight: {
+        openTabIn: vi.fn(),
+        openTab: vi.fn(),
+        mounted: { getSnapshot: () => 'session-1' },
+      },
       sidebarRightTabs: { register: vi.fn(() => () => {}) },
       effect: (setup: () => void) => {
         setup()
@@ -1850,7 +1854,7 @@ describe('plugin registration', () => {
     const target = { turn: 1, closingSeq: 2, focusPaths: ['a.txt'] }
     reviewActions.openReview(target)
     expect(ctx.sidebarRight.openTabIn).toHaveBeenCalledWith('session-1', 'dsh-file-review:review', {
-      params: target,
+      params: { ...target, sessionId: 'session-1' },
     })
     await expect(reviewActions.inspectChanges({ action: 'undo', files: [] })).resolves.toEqual({
       files: [],

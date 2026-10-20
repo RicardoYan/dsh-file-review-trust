@@ -32,8 +32,14 @@ function fixture() {
   const slots = new Map<string, ComponentType<any>>()
   const definitions: unknown[] = []
   const openTabIn = vi.fn()
+  const openTab = vi.fn()
+  let mounted = 'session-a'
   const ctx = {
-    sidebarRight: { openTabIn },
+    sidebarRight: {
+      openTabIn,
+      openTab,
+      mounted: { getSnapshot: () => mounted },
+    },
     sidebarRightTabs: {
       register: vi.fn((definition) => {
         definitions.push(definition)
@@ -72,6 +78,10 @@ function fixture() {
   return {
     open,
     openTabIn,
+    openTab,
+    show: (sessionId: string) => {
+      mounted = sessionId
+    },
     slots,
     definitions,
     dispose: () => {
@@ -88,16 +98,35 @@ describe('native sidebar review registration', () => {
     const second = { turn: 2, closingSeq: 20, focusPaths: ['b.md'] }
     f.open('session-a' as never, first)
     f.open('session-a' as never, second)
+    f.show('session-b')
     f.open('session-b' as never, first)
     expect(f.definitions).toHaveLength(1)
     expect(f.openTabIn.mock.calls).toEqual([
-      ['session-a', 'dsh-file-review:review', { params: first }],
-      ['session-a', 'dsh-file-review:review', { params: second }],
-      ['session-b', 'dsh-file-review:review', { params: first }],
+      ['session-a', 'dsh-file-review:review', { params: { ...first, sessionId: 'session-a' } }],
+      ['session-a', 'dsh-file-review:review', { params: { ...second, sessionId: 'session-a' } }],
+      ['session-b', 'dsh-file-review:review', { params: { ...first, sessionId: 'session-b' } }],
     ])
+    expect(f.openTab).not.toHaveBeenCalled()
     f.dispose()
     expect(f.definitions).toHaveLength(0)
     expect(f.slots.size).toBe(0)
+  })
+
+  // 侧栏里的子智能体对话属于子会话，它的栏座从未 adopted，openTabIn 会静默丢弃这次打开。
+  // 退回当前显示的栏，目标里仍记着稿件所属的子会话。
+  it('opens into the mounted column when the review Session owns no column', () => {
+    const f = fixture()
+    f.show('session-parent')
+    const target = { turn: 1, closingSeq: 10, focusPaths: ['a.md'] }
+    f.open('session-child' as never, target)
+    expect(f.openTabIn).not.toHaveBeenCalled()
+    expect(f.openTab.mock.calls).toEqual([
+      [
+        'dsh-file-review:review',
+        { params: { ...target, sessionId: 'session-child' } },
+      ],
+    ])
+    f.dispose()
   })
 
   // 验证 Tab 使用最新导航参数和可见状态，在对应会话中打开文件，并随语言切换更新标题。

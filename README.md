@@ -18,7 +18,10 @@ English · [简体中文](README.zh.md)
 
 > **This is dsh-file-review-trust, a fork of [left0ver/dsh-file-review](https://github.com/left0ver/dsh-file-review).**
 >
-> One difference: together with [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust), **changes to files outside a trusted workspace can be reviewed and undone too**.
+> Two differences:
+>
+> 1. Together with [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust), **changes to files outside a trusted workspace can be reviewed and undone too**.
+> 2. **Review also opens from a subagent conversation hosted in the right sidebar.** DSH only lets a plugin open a tab in a Session whose sidebar store was adopted, which happens for the Session the main column shows; a child conversation rendered inside the sidebar never gets one, so the open was dropped silently. The review now falls back to the sidebar that is showing, and carries the reviewed Session with it, so the child's own turn is what gets reviewed.
 >
 > | File location                                                        | Listed / undo                            |
 > | -------------------------------------------------------------------- | ---------------------------------------- |
@@ -33,7 +36,7 @@ English · [简体中文](README.zh.md)
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
 > dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.1
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.1
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.2
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.

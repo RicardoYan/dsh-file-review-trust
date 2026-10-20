@@ -22,7 +22,9 @@ interface NativeSidebarIntegrationOptions {
     readonly t: TranslateNS<typeof NS>;
     readonly runtimeFor: (sessionId: SessionId) => FileReviewTabRuntime;
 }
+/** A target as a row supplies it; the opener adds the Session that owns the turn. */
+export type ReviewTargetInput = Omit<ReviewTarget, 'sessionId'>;
 /** Register the native tab and return its session-targeted opener. */
-export declare function installNativeSidebarIntegration(ctx: ClientContext, { sessions, uiConversation, wordWrap, settings, t, runtimeFor }: NativeSidebarIntegrationOptions): (sessionId: SessionId, target: ReviewTarget) => void;
+export declare function installNativeSidebarIntegration(ctx: ClientContext, { sessions, uiConversation, wordWrap, settings, t, runtimeFor }: NativeSidebarIntegrationOptions): (sessionId: SessionId, target: ReviewTargetInput) => void;
 export {};
 //# sourceMappingURL=native-sidebar-adapter.d.ts.map

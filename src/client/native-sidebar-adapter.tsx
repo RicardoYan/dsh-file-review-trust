@@ -30,6 +30,9 @@ interface NativeSidebarIntegrationOptions {
   readonly runtimeFor: (sessionId: SessionId) => FileReviewTabRuntime
 }
 
+/** A target as a row supplies it; the opener adds the Session that owns the turn. */
+export type ReviewTargetInput = Omit<ReviewTarget, 'sessionId'>
+
 function ReviewTabTitle({ t }: PropsLocale<typeof NS>) {
   return <>{t('review.title')}</>
 }
@@ -38,7 +41,7 @@ function ReviewTabTitle({ t }: PropsLocale<typeof NS>) {
 export function installNativeSidebarIntegration(
   ctx: ClientContext,
   { sessions, uiConversation, wordWrap, settings, t, runtimeFor }: NativeSidebarIntegrationOptions,
-): (sessionId: SessionId, target: ReviewTarget) => void {
+): (sessionId: SessionId, target: ReviewTargetInput) => void {
   ctx.effect(
     () =>
       ctx.sidebarRightTabs.register({
@@ -92,6 +95,19 @@ export function installNativeSidebarIntegration(
     'dsh-file-review: native review title',
   )
   return (sessionId, target) => {
-    ctx.sidebarRight.openTabIn(sessionId, REVIEW_TAB_ID, { params: target })
+    // The target carries its own Session, so the review survives being hosted
+    // by the column of a different one. Fill that in here rather than at every
+    // call site: a row may know only its turn and paths.
+    const params: ReviewTarget = { ...target, sessionId }
+    // `openTabIn` writes only into a Session whose column store was adopted,
+    // and adoption happens for the Session the main column shows — a child
+    // conversation hosted inside the Sidebar never gets one, so `openTabIn`
+    // drops the open silently. Nothing throws in that case, and the column
+    // that is showing is exactly where such a caller is looking.
+    if (ctx.sidebarRight.mounted.getSnapshot() === sessionId) {
+      ctx.sidebarRight.openTabIn(sessionId, REVIEW_TAB_ID, { params })
+      return
+    }
+    ctx.sidebarRight.openTab(REVIEW_TAB_ID, { params })
   }
 }

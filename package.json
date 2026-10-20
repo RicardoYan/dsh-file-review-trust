@@ -1,6 +1,6 @@
 {
   "name": "dsh-file-review-trust",
-  "version": "0.8.10-trust.1",
+  "version": "0.8.10-trust.2",
   "description": "dsh-file-review fork: also review trusted files outside the workspace · dsh-file-review 分支：已信任工作区之外的文件改动也能审阅",
   "keywords": [
     "code-review",

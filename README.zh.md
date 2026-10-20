@@ -18,7 +18,10 @@
 
 > **这是 [left0ver/dsh-file-review](https://github.com/left0ver/dsh-file-review) 的分支：dsh-file-review-trust**
 >
-> 和原版只有一处不同：配合 [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust)，**已信任工作区之外的文件改动也能审阅、撤销**。
+> 和原版有两处不同：
+>
+> 1. 配合 [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust)，**已信任工作区之外的文件改动也能审阅、撤销**。
+> 2. **侧边栏里的子智能体对话也能打开审阅。** DSH 只允许插件往「已被 adopt 的会话」的侧边栏开页签，而 adopt 只发生在主栏显示的那个会话；渲染在侧边栏里的子会话永远拿不到，于是这次打开被**静默丢弃**（不报错）。现在退回当前显示的侧边栏打开，审阅目标里带着稿件所属的会话，所以审的是子会话自己那一轮。
 >
 > | 文件位置                                | 记进清单 / 撤销          |
 > | --------------------------------------- | ------------------------ |
@@ -33,7 +36,7 @@
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
 > dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.1
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.1
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.2
 > ```
 >
 > 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。

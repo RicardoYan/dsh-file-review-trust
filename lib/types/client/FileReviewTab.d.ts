@@ -13,6 +13,14 @@ export interface ReviewTarget {
     readonly turn: number;
     readonly closingSeq: number;
     readonly focusPaths: readonly string[];
+    /**
+     * Session whose timeline carries the reviewed turn. Absent in targets
+     * restored from before this field existed, which fall back to the tab's own
+     * Session. A review opened from a subagent conversation inside the right
+     * Sidebar draws in that conversation's host Session while the reviewed turn
+     * lives in the child, so the two are not interchangeable.
+     */
+    readonly sessionId?: string | undefined;
 }
 export interface FileReviewTabRuntime {
     readonly inspectChanges: (request: FileReviewRequest) => Promise<FileReviewResult>;
