@@ -1,7 +1,7 @@
 {
   "name": "dsh-file-review-trust",
-  "version": "0.8.10-trust.2",
-  "description": "dsh-file-review fork: also review trusted files outside the workspace · dsh-file-review 分支：已信任工作区之外的文件改动也能审阅",
+  "version": "0.8.10-trust.3",
+  "description": "dsh-file-review fork: review and undo file changes anywhere, workspace or not · dsh-file-review 分支：工作区内外的文件改动都能审阅、撤销",
   "keywords": [
     "code-review",
     "deepseek-harness",
@@ -152,13 +152,7 @@
     "@deepseek-ai/dsh-tools": ">=0.2.1-rc.1 <0.2.2-0",
     "@deepseek-ai/dsh-typert-protocol": ">=0.2.1-rc.1 <0.2.2-0",
     "@deepseek-ai/dsh-typert-registry": ">=0.2.1-rc.1 <0.2.2-0",
-    "dsh-workspace-trust": ">=0.2.0 <0.3.0",
     "react": "^18.2.0"
-  },
-  "peerDependenciesMeta": {
-    "dsh-workspace-trust": {
-      "optional": true
-    }
   },
   "icon": "./assets/icon.svg",
   "engines": {

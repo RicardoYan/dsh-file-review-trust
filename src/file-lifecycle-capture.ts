@@ -54,8 +54,7 @@ function errorCode(error: unknown, code: string): boolean {
   )
 }
 
-// Fork: the scope check (session directory, or the trust plugin's rules) replaces
-// upstream's "inside the session directory" test.
+// Fork: the scope check replaces upstream's "inside the session directory" test.
 async function capturePath(scope: WorkspaceScope, path: string): Promise<CapturedImage | null> {
   const candidate = resolve(scope.cwd, path)
   if ((await scope.check(candidate)) !== undefined) return null
@@ -334,7 +333,7 @@ export function registerFileLifecycleCapture(ctx: Context): void {
       let scope: WorkspaceScope
       let before: ReadonlyMap<string, CapturedImage | null>
       try {
-        scope = await workspaceScope(cwd, ctx.get('workspaceTrust'))
+        scope = await workspaceScope(cwd)
         before = await captureImages(scope, paths)
       } catch {
         return next()

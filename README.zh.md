@@ -20,23 +20,14 @@
 >
 > 和原版有两处不同：
 >
-> 1. 配合 [dsh-workspace-trust](https://github.com/RicardoYan/dsh-workspace-trust)，**已信任工作区之外的文件改动也能审阅、撤销**。
+> 1. **工作区之外的文件改动也能审阅、撤销**。原版只认会话目录；这个分支去掉了这条边界，所以经目录链接（比如 `tools/` junction）写出去、真实路径在别处的文件，同样会进清单、同样能撤回来。
 > 2. **侧边栏里的子智能体对话也能打开审阅。** DSH 只允许插件往「已被 adopt 的会话」的侧边栏开页签，而 adopt 只发生在主栏显示的那个会话；渲染在侧边栏里的子会话永远拿不到，于是这次打开被**静默丢弃**（不报错）。现在退回当前显示的侧边栏打开，审阅目标里带着稿件所属的会话，所以审的是子会话自己那一轮。
->
-> | 文件位置                                | 记进清单 / 撤销          |
-> | --------------------------------------- | ------------------------ |
-> | 工作区内（从会话目录往上找到的 git 根） | ✓                        |
-> | 工作区外，工作区已信任                  | ✓（撤销时再查一次）      |
-> | 工作区外，未信任                        | ✗                        |
-> | 禁止访问列表里的                        | ✗                        |
-> | 没装 dsh-workspace-trust                | 和原版一样，只认会话目录 |
 >
 > 安装（先卸载原版，两者不能同时装）：
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-workspace-trust#v0.2.1
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.2
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.3
 > ```
 >
 > 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。

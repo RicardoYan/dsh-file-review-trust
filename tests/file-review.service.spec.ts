@@ -421,8 +421,8 @@ describe('Host file-review change engine', () => {
     ])
   })
 
-  // 验证工作区外路径、符号链接、目录及缺少父目录的路径均报告错误。
-  it('rejects paths outside the workspace and symbolic links', async () => {
+  // 验证符号链接、目录及缺少父目录的路径均报告错误；工作区外的普通文件不再拒绝。
+  it('accepts paths outside the workspace and rejects symbolic links', async () => {
     const root = await workspace()
     await writeFile(join(root, 'target.txt'), 'new')
     await symlink(join(root, 'target.txt'), join(root, 'link.txt'))
@@ -438,17 +438,20 @@ describe('Host file-review change engine', () => {
         },
       ],
     })
+    const outside = join(root, '..', 'outside-target.txt')
+    await writeFile(outside, 'new')
+    roots.push(outside)
     const result = await status(fakeAgent(root), {
       action: 'undo',
       files: [
-        change('/etc/hosts', 'old', 'new'),
+        change(outside, 'old', 'new'),
         lifecycle('link.txt'),
         lifecycle('folder'),
         lifecycle('missing-parent/file.txt'),
       ],
     })
-    expect(result.files).toEqual([
-      expect.objectContaining({ state: 'error', reason: 'path is outside the session workspace' }),
+    expect(result.files[0]).toEqual(expect.objectContaining({ state: 'applied' }))
+    expect(result.files.slice(1)).toEqual([
       expect.objectContaining({ state: 'error', reason: 'symbolic links are not supported' }),
       expect.objectContaining({ state: 'error', reason: 'path is not a regular file' }),
       expect.objectContaining({ state: 'error' }),

@@ -44,8 +44,8 @@ function errorCode(error: unknown, code: string): boolean {
   )
 }
 
-// Fork: the scope check (session directory, or the trust plugin's rules) replaces
-// upstream's "inside the session directory" test, and runs again on every toggle.
+// Fork: the scope check replaces upstream's "inside the session directory" test,
+// and runs again on every toggle.
 async function resolveFile(scope: WorkspaceScope, requestedPath: string): Promise<FileImage> {
   const candidate = resolve(scope.cwd, requestedPath)
   const early = await scope.check(candidate)
@@ -377,23 +377,13 @@ function sessionCwd(agent: Agent): string {
   return cwd
 }
 
-/** The optional `workspaceTrust` service, read at call time (fork addition). */
-function trustOf(service: unknown): unknown {
-  try {
-    return (service as { ctx?: { get?: (name: string) => unknown } })?.ctx?.get?.('workspaceTrust')
-  } catch {
-    return undefined
-  }
-}
-
 /** Like upstream, a session directory that cannot be resolved fails each file, not the call. */
 async function scopeOrError(
   cwd: string,
-  trust: unknown,
   request: FileReviewRequest,
 ): Promise<WorkspaceScope | FileReviewResult> {
   try {
-    return await workspaceScope(cwd, trust)
+    return await workspaceScope(cwd)
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error)
     return {
@@ -415,7 +405,7 @@ export class FileReviewService extends TypertRemoteService {
 
   /** Inspect current disk state without changing files. */
   async status(agent: Agent, request: FileReviewRequest): Promise<FileReviewResult> {
-    const scope = await scopeOrError(sessionCwd(agent), trustOf(this), request)
+    const scope = await scopeOrError(sessionCwd(agent), request)
     if ('files' in scope) return scope
     const files = await Promise.all(
       request.files.map((file) => inspectOne(scope, file, request.action)),
@@ -426,9 +416,8 @@ export class FileReviewService extends TypertRemoteService {
   /** Toggle every independently safe file while the receiving Agent is idle. */
   async apply(agent: Agent, request: FileReviewRequest): Promise<FileReviewResult> {
     const cwd = sessionCwd(agent)
-    const trust = trustOf(this)
     return agent.runMaintenance(async () => {
-      const scope = await scopeOrError(cwd, trust, request)
+      const scope = await scopeOrError(cwd, request)
       if ('files' in scope) return scope
       const files: FileReviewFileResult[] = []
       for (const file of request.files) files.push(await applyOne(scope, file, request.action))
