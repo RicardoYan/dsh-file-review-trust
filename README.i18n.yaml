@@ -2,5 +2,5 @@
 # CI checks structure and requires both languages to change together. After confirming
 # that their meaning is aligned, update this record with:
 #   npm run update:readme-i18n
-README.md: d4ce0edca9224e6754e53e9d48be3ad37597d405
-README.zh.md: dae9ed42b737988f70db75a0689f0e98c201e6e6
+README.md: ba3267770e373ec09d4fc096422f64f82400b2c5
+README.zh.md: 35c87a95e15323d944d0d6b56aa01c236c497196

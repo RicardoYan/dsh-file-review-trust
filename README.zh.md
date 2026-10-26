@@ -27,7 +27,7 @@
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.3
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.11-trust.1
 > ```
 >
 > 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。

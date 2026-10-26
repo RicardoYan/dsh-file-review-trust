@@ -27,7 +27,7 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.10-trust.3
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.11-trust.1
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
