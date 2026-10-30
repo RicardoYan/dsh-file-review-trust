@@ -1,6 +1,6 @@
-﻿# Git blob hashes from the last human-confirmed bilingual README review.
+# Git blob hashes from the last human-confirmed bilingual README review.
 # CI checks structure and requires both languages to change together. After confirming
 # that their meaning is aligned, update this record with:
 #   npm run update:readme-i18n
-README.md: ba3267770e373ec09d4fc096422f64f82400b2c5
-README.zh.md: 35c87a95e15323d944d0d6b56aa01c236c497196
+README.md: 41afd3dd4acdab4ce9d30d7294df587b222397a1
+README.zh.md: b20df8bd5dcb1bb8946f862354ff1104599bee7e
