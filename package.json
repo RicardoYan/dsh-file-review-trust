@@ -1,6 +1,6 @@
 {
   "name": "dsh-file-review-trust",
-  "version": "0.8.12-trust.1",
+  "version": "0.8.13-trust.1",
   "description": "dsh-file-review fork: review and undo file changes anywhere, workspace or not · dsh-file-review 分支：工作区内外的文件改动都能审阅、撤销",
   "keywords": [
     "code-review",
