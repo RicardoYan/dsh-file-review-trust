@@ -1,7 +1,7 @@
 /** Host Adapter: project nested PTC tool presentations into their durable log copy. */
 import type { Context } from '@deepseek-ai/cordis';
 import type { ContentBlock } from '@deepseek-ai/dsh-llm';
-import type { PtcDispatchLog } from '@deepseek-ai/dsh-tools';
+import type { PtcDispatchLog } from '@deepseek-ai/dsh-tool-executor-ptc';
 /**
  * Await the existing log shapers, then append this plugin's invisible marker.
  * Any Adapter failure degrades to the already-shaped content.

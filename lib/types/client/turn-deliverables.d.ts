@@ -31,13 +31,8 @@ interface DeliverablesState extends DeliverablesTurnData {
     }>;
     readonly subCalls: ReadonlySet<string>;
 }
-/**
- * Files and review hunks available at one closing Assistant boundary.
- * @param data - engine-published Deliverables data for one Turn.
- * @param seq - closing Assistant seq; later Tool settlements are excluded.
- * @returns Produced files in first-seen order with same-path hunks appended in settlement order.
- */
-export declare function reviewsForClosing(data: Readonly<DeliverablesTurnData> | undefined, seq?: number): readonly ProducedFileReview[];
+/** 读取整个 turn 的文件变更，同一路径的差异按工具完成顺序合并。 */
+export declare function reviewsForClosing(data: Readonly<DeliverablesTurnData> | undefined): readonly ProducedFileReview[];
 /**
  * Files produced by one Turn data value.
  *
@@ -53,10 +48,9 @@ export declare function reviewsForClosing(data: Readonly<DeliverablesTurnData> |
  * runs, so paths cannot spill across turns and this derivation does not infer
  * boundaries from neighboring presentation Nodes.
  * @param data - engine-published Deliverables data for one Turn.
- * @param seq - closing Assistant seq; later Tool settlements are excluded.
  * @returns Produced paths in first-seen order; empty when the turn wrote nothing.
  */
-export declare function producedForClosing(data: Readonly<DeliverablesTurnData> | undefined, seq?: number): readonly string[];
+export declare function producedForClosing(data: Readonly<DeliverablesTurnData> | undefined): readonly string[];
 /**
  * Claim the turn-tail chain only when its closing turn produced files.
  * @param owner - Turn-tail owner currency for the closing assistant.

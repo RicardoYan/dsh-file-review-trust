@@ -1,6 +1,7 @@
 /** Composer reference bridge for aggregate session review comments. */
 import type { Context as ClientContext } from '@deepseek-ai/cordis';
 import type { SessionEventSource } from '@deepseek-ai/dsh-api-session-controller/client';
+import type { DraftSnapshot, InputState } from '@deepseek-ai/dsh-client-ui-conversation/client';
 import type { InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client';
 import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots';
 import type { NS } from './locales.ts';
@@ -15,15 +16,15 @@ interface ReviewOccurrence {
 interface ReviewInputState {
     readonly draft: string;
     readonly draftRev: number;
-    readonly phase: 'plain' | 'adjudicating' | 'claimed' | 'submitting';
+    readonly phase: InputState['phase'];
     readonly occurrences: readonly ReviewOccurrence[];
 }
 export interface ReviewInput {
+    readonly draftSnapshot: DraftSnapshot;
     readonly state: {
         getSnapshot(): ReviewInputState;
         subscribe(listener: () => void): () => void;
     };
-    setDraft(text: string): void;
 }
 /** Register the reference codec used by the programmatically inserted aggregate chip. */
 export declare function reviewCommentSource(): InputTriggerSource;

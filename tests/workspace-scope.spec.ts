@@ -6,6 +6,7 @@ import { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 import Tools, { defineTool } from '@deepseek-ai/dsh-tools'
+import * as NativeExecutor from '@deepseek-ai/dsh-tool-executor-native'
 import { afterEach, describe, expect, it } from 'vitest'
 import type { FileReviewRequest } from '../src/change-types.ts'
 import { FileReviewService } from '../src/file-review-service.ts'
@@ -141,6 +142,9 @@ describe('capture', () => {
     ctx = new Context()
     await ctx.plugin(SystemPrompt, { persona: '' })
     await ctx.plugin(Tools, {})
+    // DSH 0.2.2 moved tool dispatch into a selectable executor; without one
+    // mounted `tools.execute` throws `ToolExecutorUnavailableError`.
+    await ctx.plugin(NativeExecutor, {})
     await ctx.plugin({ apply, inject }).await()
     ctx.tools.register(
       defineTool({
@@ -169,6 +173,11 @@ describe('capture', () => {
     const agent = {
       session: {
         header: { cwd },
+        // DSH 0.2.2's native executor appends settlement events through
+        // `session.append` and reads `.seq` off the return value.
+        append() {
+          return { seq: 0 }
+        },
         events: [
           {
             seq: 0,
@@ -179,13 +188,16 @@ describe('capture', () => {
         ],
       },
     } as unknown as Agent
-    const result = await ctx!.tools.execute({
-      callId,
-      name: 'fixture_edit',
-      arguments: { path, content: 'new\n' },
+    // DSH 0.2.2 replaced the single-call signature with a batch: `execute`
+    // takes `{ calls, agent, signal, log }` and returns `{ results }`.
+    const batch = await ctx!.tools.execute({
+      calls: [{ type: 'tool_call', id: callId, name: 'fixture_edit', arguments: JSON.stringify({ path, content: 'new\n' }) }],
       agent,
       signal: new AbortController().signal,
+      log: { turn: 1, step: 1 },
     })
+    const result = batch.results[0]?.result
+    if (result === undefined) throw new Error('tool batch returned no result')
     return markerFromContent(result.content, { rootCallId: callId, subCallId: callId })
   }
 
