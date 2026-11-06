@@ -22,11 +22,22 @@ export declare const Config: z<Schemastery.ObjectS<NoInfer<{
     wordWrap: z<boolean, boolean, "volatile-defined">;
     diffLayout: z<"split" | "unified", "split" | "unified", "volatile-defined">;
 }>>, "plain">;
-/** Services required for the model guidance paired with the browser renderer. */
+/**
+ * Services required by the Host half: file-review settings and the tool
+ * registry the lifecycle capture hooks into.
+ *
+ * `systemPrompt` is no longer required: DSH 0.2.2 moved the final-response
+ * file-reference guidance into `@deepseek-ai/dsh-deliverable-file-references`,
+ * which the web-app patch mounts on its own. This package used to register an
+ * equivalent section (`ui:file-review-references`); keeping both meant the model
+ * received two instructions that disagreed about link format — this one asked
+ * for inline code plus a basename, the official one asks for an angle-bracketed
+ * full path. The official section wins.
+ */
 export declare const inject: string[];
 /**
- * Register model guidance for the file-reference renderer shipped by this package.
- * @param ctx - host context carrying the system-prompt registry.
+ * Mount the review engine.
+ * @param ctx - host context carrying the settings and tool registries.
  */
 export declare function apply(ctx: Context): void;
 //# sourceMappingURL=index.d.ts.map

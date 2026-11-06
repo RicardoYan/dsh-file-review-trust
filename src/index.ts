@@ -33,17 +33,23 @@ export const Config = z.object({
     .volatile(),
 })
 
-/** Services required for the model guidance paired with the browser renderer. */
-export const inject = ['systemPrompt', 'tools']
-
-/** Stable final-response guidance owned by the matching renderer. */
-const FILE_REFERENCE_PROMPT =
-  'When you successfully create or modify files, mention the primary outputs in your final response. ' +
-  'To make those and any other changed-file references clickable in Web, format them as Markdown inline code using the exact file-tool path, or a basename when unique among the files changed in that turn.'
+/**
+ * Services required by the Host half: file-review settings and the tool
+ * registry the lifecycle capture hooks into.
+ *
+ * `systemPrompt` is no longer required: DSH 0.2.2 moved the final-response
+ * file-reference guidance into `@deepseek-ai/dsh-deliverable-file-references`,
+ * which the web-app patch mounts on its own. This package used to register an
+ * equivalent section (`ui:file-review-references`); keeping both meant the model
+ * received two instructions that disagreed about link format — this one asked
+ * for inline code plus a basename, the official one asks for an angle-bracketed
+ * full path. The official section wins.
+ */
+export const inject = ['tools']
 
 /**
- * Register model guidance for the file-reference renderer shipped by this package.
- * @param ctx - host context carrying the system-prompt registry.
+ * Mount the review engine.
+ * @param ctx - host context carrying the settings and tool registries.
  */
 export function apply(ctx: Context): void {
   ctx.inject(['settings'], (child) => {
@@ -52,9 +58,4 @@ export function apply(ctx: Context): void {
   new FileReviewService(ctx)
   registerFileLifecycleCapture(ctx)
   registerPtcAdapter(ctx)
-  ctx.systemPrompt.section({
-    name: 'ui:file-review-references',
-    order: 190,
-    text: FILE_REFERENCE_PROMPT,
-  })
 }
