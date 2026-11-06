@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Revisão de arquivos (dsh-file-review-trust)",
+    "description": "Revisa alterações de arquivos numa aba da barra lateral; ao contrário do original, alterações fora da área de trabalho também podem ser revisadas e revertidas."
+  }
+}

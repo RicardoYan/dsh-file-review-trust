@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Révision de fichiers (dsh-file-review-trust)",
+    "description": "Examine les modifications de fichiers dans un onglet de la barre latérale ; contrairement à l'original, les modifications hors de l'espace de travail peuvent aussi être examinées et annulées."
+  }
+}

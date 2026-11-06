@@ -34,7 +34,7 @@ import {
   ReviewCommentsText,
   reviewCommentsTextRule,
 } from './ReviewCommentsText.tsx'
-import { en, NS, zh, type DeliverablesKey } from './locales.ts'
+import { DE, ES, FR, JA, NS, PT, RU, en, zh, type DeliverablesKey } from './locales.ts'
 import {
   deliverablesDefinition,
   producedFileMentions,
@@ -151,7 +151,10 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
     runtimeFor: reviewRemoteFor,
   })
   ctx.uiConversation.events.register(deliverablesDefinition)
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'file-review: dictionaries')
+  ctx.effect(
+      () => ctx.locale.register(NS, { zh, en, de: DE, es: ES, fr: FR, ja: JA, pt: PT, ru: RU }),
+      'file-review: dictionaries',
+    )
   ctx.slots.inject('plugins.row.config', () =>
     ctx.slots.register(
       {

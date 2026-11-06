@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Dateiüberprüfung (dsh-file-review-trust)",
+    "description": "Überprüft Dateiänderungen in einem Seitenleisten-Tab; anders als im Original lassen sich auch Änderungen außerhalb des Arbeitsbereichs überprüfen und rückgängig machen."
+  }
+}

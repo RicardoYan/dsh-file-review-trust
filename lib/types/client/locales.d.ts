@@ -79,4 +79,10 @@ export declare const en: {
 export type DeliverablesKey = keyof typeof en;
 /** Simplified Chinese dictionary. */
 export declare const zh: Record<DeliverablesKey, string>;
+export declare const DE: Record<DeliverablesKey, string>;
+export declare const ES: Record<DeliverablesKey, string>;
+export declare const FR: Record<DeliverablesKey, string>;
+export declare const JA: Record<DeliverablesKey, string>;
+export declare const PT: Record<DeliverablesKey, string>;
+export declare const RU: Record<DeliverablesKey, string>;
 //# sourceMappingURL=locales.d.ts.map

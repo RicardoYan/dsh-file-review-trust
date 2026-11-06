@@ -1791,7 +1791,21 @@ describe('plugin registration', () => {
     expect(registerSource).toHaveBeenCalledOnce()
     expect(mountRemote).toHaveBeenCalledOnce()
     expect(definition).toBe(deliverablesDefinition)
-    expect(registerLocale).toHaveBeenCalledWith('file-review', { zh, en })
+    // 只看这一条注册用的命名空间和它携带的语言；插件以后补其它语言时
+    // 不该让这条断言失效，但每个语言的键集合必须与英文一致。
+    expect(registerLocale).toHaveBeenCalledOnce()
+    const [localeNs, dictionaries] = registerLocale.mock.calls[0] as [
+      string,
+      Record<string, Record<string, string>>,
+    ]
+    expect(localeNs).toBe('file-review')
+    expect(dictionaries.zh).toEqual(zh)
+    expect(dictionaries.en).toEqual(en)
+    for (const [language, dict] of Object.entries(dictionaries)) {
+      expect(Object.keys(dict).sort(), `dictionary keys for ${language}`).toEqual(
+        Object.keys(en).sort(),
+      )
+    }
     const settingsRegistration = registrations.find(
       (registration) => registration.options.name === 'plugins.row.config',
     )
