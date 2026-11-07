@@ -27,7 +27,7 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.8.14-trust.1
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.0-trust.1
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
@@ -46,8 +46,8 @@ English · [简体中文](README.zh.md)
 
 1. This plugin supports standard, PTC, and Creator modes, but **does not currently support Minimal mode**.
 2. Review every file the agent just changed, shown in the `Diff` panel.
-3. Undo edited and newly created files. **Undoing deleted files is not currently supported.**
-   > DSH does not currently provide a file-deletion tool, so this plugin cannot yet undo deleted files. Support will be added once DSH provides such a tool.
+3. Enable DSH's `apply_patch` tool by default when installed. Review text file creation, editing, deletion, and moves, with undo and reapply support.
+   > Use `apply_patch` to review file deletions and moves; the plugin captures the original content and file permissions before deletion.
 4. Add comments to changed lines and ask the agent to continue making updates based on the feedback, or ask questions about the changes.
 5. Automatically wrap long text while reviewing. Enable it under Settings → Plugins → Plugin configuration → File review; it is disabled by default.
 6. Multilingual support — both English and Chinese are supported.
@@ -116,10 +116,6 @@ dsh plugin --profile web update dsh-file-review
 ```sh
 dsh plugin --profile web remove dsh-file-review
 ```
-
-## Roadmap
-
-- [ ] Add undo support for deleted files.
 
 ## Friendly Links
 
