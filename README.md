@@ -4,7 +4,7 @@
 
 **Review every file an agent just changed—without leaving DeepSeek Harness Web.**
 
-[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.2--rc.2-4f46e5?style=flat-square)](package.json)
+[![Adapted DSH CLI version](https://img.shields.io/badge/DSH_CLI-0.2.2--rc.3-4f46e5?style=flat-square)](package.json)
 ![Web profile](https://img.shields.io/badge/profile-Web-0ea5e9?style=flat-square)
 [![npm version](https://img.shields.io/npm/v/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
 [![npm downloads](https://img.shields.io/npm/dm/dsh-file-review?style=flat-square&logo=npm)](https://www.npmjs.com/package/dsh-file-review)
@@ -27,7 +27,7 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.0-trust.2
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.0-trust.3
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
@@ -54,7 +54,7 @@ English · [简体中文](README.zh.md)
 
 ## Compatibility
 
-The badge above shows the DSH CLI version this release was tested against. This release supports `0.2.2-rc.1` through the `0.2.2` release and requires Node.js 24.9 or later. The exact DSH range is `engines.dsh` in [package.json](package.json), with the same range declared in `peerDependencies`.
+The badge above shows the DSH CLI version this release was tested against. This release supports `0.2.2-rc.3` through the `0.2.2` release and requires Node.js 24.9 or later. The exact DSH range is `engines.dsh` in [package.json](package.json), with the same range declared in `peerDependencies`.
 
 Outside that range, DSH refuses to load the plugin. To run it anyway at your own risk, grant an exemption for the exact versions involved:
 
