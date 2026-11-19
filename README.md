@@ -27,7 +27,7 @@ English · [简体中文](README.zh.md)
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.0-trust.3
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.1-trust.1
 > ```
 >
 > Versions are `<upstream version>-trust.<n>`. The upstream documentation follows.
@@ -51,10 +51,11 @@ English · [简体中文](README.zh.md)
 4. Add comments to changed lines and ask the agent to continue making updates based on the feedback, or ask questions about the changes.
 5. Automatically wrap long text while reviewing. Enable it under Settings → Plugins → Plugin configuration → File review; it is disabled by default.
 6. Multilingual support — both English and Chinese are supported.
+7. Intraline highlighting in the diff panel: within a changed line, exactly the characters that changed are marked.
 
 ## Compatibility
 
-The badge above shows the DSH CLI version this release was tested against. This release supports `0.2.2-rc.3` through the `0.2.2` release and requires Node.js 24.9 or later. The exact DSH range is `engines.dsh` in [package.json](package.json), with the same range declared in `peerDependencies`.
+The badge above shows the DSH CLI version this release was tested against. This release supports `0.2.2-rc.5` through the `0.2.2` release and requires Node.js 24.9 or later. The exact DSH range is `engines.dsh` in [package.json](package.json), with the same range declared in `peerDependencies`.
 
 Outside that range, DSH refuses to load the plugin. To run it anyway at your own risk, grant an exemption for the exact versions involved:
 

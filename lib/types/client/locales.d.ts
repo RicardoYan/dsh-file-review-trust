@@ -23,6 +23,7 @@ export declare const en: {
     'produced.edited': string;
     'produced.moreOne': string;
     'produced.more': string;
+    'produced.showLess': string;
     'produced.open': string;
     'produced.review': string;
     'produced.reviewAll': string;
@@ -71,6 +72,7 @@ export declare const en: {
     'review.commentPreview': string;
     'review.commentOpenPreview': string;
     'review.commentRemoveAll': string;
+    'review.commentRemoveOne': string;
     'review.commentSideLeft': string;
     'review.commentSideRight': string;
     'review.commentLocation': string;

@@ -9,6 +9,9 @@ export interface PreviewReviewComment {
     readonly oldLine: string | number | null;
     readonly newLine: string | number | null;
     readonly body: string;
+    readonly lineText?: string | undefined;
+    readonly removeLabel?: string | undefined;
+    readonly onRemove?: (() => void) | undefined;
 }
 interface ReviewCommentPillProps {
     readonly comments: readonly PreviewReviewComment[];

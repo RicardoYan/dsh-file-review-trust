@@ -12,6 +12,8 @@ export declare function ReviewStats({ stats, label, meter, }: {
     readonly label: string;
     readonly meter?: boolean | undefined;
 }): import("react").JSX.Element;
+/** Git-style status letter for one reviewed file's net lifecycle. */
+export declare function fileStatus(review: ProducedFileReview): 'A' | 'D' | 'M';
 export interface ReviewContentProps extends PropsLocale<typeof NS> {
     readonly reviews: readonly ProducedFileReview[];
     readonly projectRoot?: string | undefined;

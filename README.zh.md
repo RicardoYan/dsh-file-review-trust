@@ -27,7 +27,7 @@
 >
 > ```sh
 > dsh plugin --profile desktop remove dsh-file-review
-> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.0-trust.3
+> dsh plugin --profile desktop add github:RicardoYan/dsh-file-review-trust#v0.9.1-trust.1
 > ```
 >
 > 版本号 `<原版版本>-trust.<n>`。下面是原版的说明。
@@ -51,10 +51,11 @@
 4. 可对变更行添加评论，并让 Agent 根据评论内容继续修改，或者对该变更进行询问。
 5. 审查时支持长文本自动换行，可在“设置 → 插件 → 插件配置 → 文件审查”中开启，默认关闭。
 6. 多语言支持，包括中文和英文。
+7. 差异面板带行内高亮：改动行里再精确标出哪些字符变了。
 
 ## 兼容性声明
 
-顶部徽章是本版本实际测试过的 DSH CLI 版本。本版本支持从 `0.2.2-rc.3` 到 `0.2.2` 正式版，需要 Node.js 24.9 或更新版本。准确的 DSH 范围见 [package.json](package.json) 中的 `engines.dsh`，`peerDependencies` 使用相同范围。
+顶部徽章是本版本实际测试过的 DSH CLI 版本。本版本支持从 `0.2.2-rc.5` 到 `0.2.2` 正式版，需要 Node.js 24.9 或更新版本。准确的 DSH 范围见 [package.json](package.json) 中的 `engines.dsh`，`peerDependencies` 使用相同范围。
 
 超出该范围时，DSH 会拒绝加载插件。如果仍想使用（风险自负），可以为对应的精确版本授予豁免：
 
